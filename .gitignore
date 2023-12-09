@@ -3,7 +3,7 @@
 #
 .idea
 .DS_Store
-configs/config.yaml
+env
 
 # Binaries for programs and plugins
 *.exe
