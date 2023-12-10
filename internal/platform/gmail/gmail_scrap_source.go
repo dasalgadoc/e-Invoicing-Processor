@@ -2,6 +2,7 @@ package gmail
 
 import (
 	"fmt"
+	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/criteria"
 	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/errors"
 	"google.golang.org/api/gmail/v1"
 )
@@ -22,7 +23,7 @@ func NewGmailScrapSource() (*ScrapSource, *errors.ProjectError) {
 	}, nil
 }
 
-func (s *ScrapSource) ListMessagesWithAttachments() *errors.ProjectError {
+func (s *ScrapSource) ListMessagesWithAttachments(criteria criteria.Criteria) *errors.ProjectError {
 	query := "has:attachment"
 	resp, err := s.service.Users.Messages.List(userId).Q(query).Do()
 

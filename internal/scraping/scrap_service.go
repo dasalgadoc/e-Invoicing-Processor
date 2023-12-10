@@ -1,6 +1,9 @@
 package scraping
 
-import "github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/errors"
+import (
+	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/criteria"
+	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/errors"
+)
 
 type ScrapService struct {
 	scrapSource ScrapSource
@@ -13,5 +16,6 @@ func NewScrapSource(source ScrapSource) *ScrapService {
 }
 
 func (s *ScrapService) Invoke() *errors.ProjectError {
-	return s.scrapSource.ListMessagesWithAttachments()
+	c := criteria.NewCriteria(0, 0, "", "", nil)
+	return s.scrapSource.ListMessagesWithAttachments(*c)
 }
