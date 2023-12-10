@@ -1,5 +1,7 @@
 package scraping
 
+import "github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/errors"
+
 type ScrapService struct {
 	scrapSource ScrapSource
 }
@@ -10,6 +12,6 @@ func NewScrapSource(source ScrapSource) *ScrapService {
 	}
 }
 
-func (s *ScrapService) Invoke() {
-	s.scrapSource.ListMessages()
+func (s *ScrapService) Invoke() *errors.ProjectError {
+	return s.scrapSource.ListMessages()
 }

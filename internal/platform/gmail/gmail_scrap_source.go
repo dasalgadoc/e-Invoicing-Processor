@@ -6,6 +6,8 @@ import (
 	"google.golang.org/api/gmail/v1"
 )
 
+const userId = "me"
+
 type ScrapSource struct {
 	service *gmail.Service
 }
@@ -21,13 +23,22 @@ func NewGmailScrapSource() (*ScrapSource, *errors.ProjectError) {
 }
 
 func (s *ScrapSource) ListMessages() *errors.ProjectError {
-	messages, err := s.service.Users.Messages.List("me").Do()
+	resp, err := s.service.Users.Messages.List(userId).Do()
+
 	if err != nil {
 		return errors.NewProjectError("gmail_scrap_source.go", errors.ServiceError, err.Error())
 	}
 
-	for _, message := range messages.Messages {
-		fmt.Println("Subject:", message.Snippet)
+	for i, message := range resp.Messages {
+		msgContent, err := s.service.Users.Messages.Get(userId, message.Id).Do()
+		if err != nil {
+			return errors.NewProjectError("gmail_scrap_source.go", errors.ServiceError, err.Error())
+		}
+		for _, header := range msgContent.Payload.Headers {
+			if header.Name == "Subject" {
+				fmt.Println(i, header.Value)
+			}
+		}
 	}
 
 	return nil
