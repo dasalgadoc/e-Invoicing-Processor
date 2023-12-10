@@ -4,6 +4,7 @@ import (
 	"github.com/dasalgadoc/e-Invoicing-Processor/internal/scraping"
 	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/criteria"
 	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/errors"
+	"github.com/schollz/progressbar/v3"
 	"google.golang.org/api/gmail/v1"
 )
 
@@ -39,6 +40,7 @@ func (s *ScrapSource) GetInvoicingMessages(criteria criteria.Criteria) ([]scrapi
 		return nil, errors.NewProjectError(sourceFile, errors.ServiceError, err.Error())
 	}
 
+	progressBar := progressbar.Default(int64(len(resp.Messages)), "Gathering messages")
 	var messages []scraping.Message
 	for _, message := range resp.Messages {
 		msgContent, err := s.service.Users.Messages.Get(userId, message.Id).Do()
@@ -55,6 +57,7 @@ func (s *ScrapSource) GetInvoicingMessages(criteria criteria.Criteria) ([]scrapi
 		if msg != nil {
 			messages = append(messages, *msg)
 		}
+		progressBar.Add(1)
 	}
 
 	return messages, nil
