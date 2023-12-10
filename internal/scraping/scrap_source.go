@@ -6,5 +6,5 @@ import (
 )
 
 type ScrapSource interface {
-	ListMessagesWithAttachments(criteria criteria.Criteria) *errors.ProjectError
+	GetInvoicingMessages(criteria criteria.Criteria) ([]Message, *errors.ProjectError)
 }

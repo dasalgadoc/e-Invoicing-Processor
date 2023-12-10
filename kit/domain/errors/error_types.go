@@ -11,4 +11,5 @@ const (
 	NotFoundError        = "not_found"
 	ServiceError         = "service"
 	BuilderError         = "builder"
+	PartialError         = "partial"
 )

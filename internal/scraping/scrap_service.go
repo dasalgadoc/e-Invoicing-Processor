@@ -17,5 +17,6 @@ func NewScrapSource(source ScrapSource) *ScrapService {
 
 func (s *ScrapService) Invoke() *errors.ProjectError {
 	c := criteria.NewCriteria(0, 0, "", "", nil)
-	return s.scrapSource.ListMessagesWithAttachments(*c)
+	_, err := s.scrapSource.GetInvoicingMessages(*c)
+	return err
 }
