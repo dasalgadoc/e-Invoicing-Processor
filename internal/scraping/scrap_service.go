@@ -13,5 +13,5 @@ func NewScrapSource(source ScrapSource) *ScrapService {
 }
 
 func (s *ScrapService) Invoke() *errors.ProjectError {
-	return s.scrapSource.ListMessages()
+	return s.scrapSource.ListMessagesWithAttachments()
 }

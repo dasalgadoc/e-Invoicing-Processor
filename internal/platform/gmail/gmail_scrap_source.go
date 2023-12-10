@@ -22,8 +22,9 @@ func NewGmailScrapSource() (*ScrapSource, *errors.ProjectError) {
 	}, nil
 }
 
-func (s *ScrapSource) ListMessages() *errors.ProjectError {
-	resp, err := s.service.Users.Messages.List(userId).Do()
+func (s *ScrapSource) ListMessagesWithAttachments() *errors.ProjectError {
+	query := "has:attachment"
+	resp, err := s.service.Users.Messages.List(userId).Q(query).Do()
 
 	if err != nil {
 		return errors.NewProjectError("gmail_scrap_source.go", errors.ServiceError, err.Error())
