@@ -15,6 +15,12 @@ const (
 	folderFormat = "2006-01-02_15_04_05"
 )
 
+type ServiceResponse struct {
+	TotalMessages     int
+	DestinationFolder string
+	Messages          []Message
+}
+
 type ScrapService struct {
 	scrapSource ScrapSource
 }
@@ -25,22 +31,32 @@ func NewScrapSource(source ScrapSource) *ScrapService {
 	}
 }
 
-func (s *ScrapService) Invoke() *errors.ProjectError {
+func (s *ScrapService) Invoke() (*ServiceResponse, *errors.ProjectError) {
 	c := criteria.NewCriteria(0, 0, "", "", nil)
 	messages, err := s.scrapSource.GetInvoicingMessages(*c)
 	if err != nil {
-		return errors.NewProjectError(serviceName, errors.ServiceError, err.Error())
+		return nil, errors.NewProjectError(serviceName, errors.ServiceError, err.Error())
 	}
 	fmt.Println("Message gathered: ", len(messages))
 
-	return s.saveAttachments(messages)
+	destination, attachErr := s.saveAttachments(messages)
+	if attachErr != nil {
+		return nil, attachErr
+	}
+
+	resp := &ServiceResponse{
+		TotalMessages:     len(messages),
+		DestinationFolder: destination,
+		Messages:          messages,
+	}
+	return resp, nil
 }
 
-func (s *ScrapService) saveAttachments(messages []Message) *errors.ProjectError {
+func (s *ScrapService) saveAttachments(messages []Message) (string, *errors.ProjectError) {
 	basePath := folderPath()
 	err := os.Mkdir(basePath, os.ModePerm)
 	if err != nil {
-		return errors.NewProjectError(serviceName, errors.OSError, err.Error())
+		return basePath, errors.NewProjectError(serviceName, errors.OSError, err.Error())
 	}
 
 	fmt.Println("Saving attachments in: ", basePath)
@@ -51,18 +67,18 @@ func (s *ScrapService) saveAttachments(messages []Message) *errors.ProjectError 
 
 		file, err := os.Create(path)
 		if err != nil {
-			return errors.NewProjectError(serviceName, errors.OSError, err.Error())
+			return basePath, errors.NewProjectError(serviceName, errors.OSError, err.Error())
 		}
 		defer file.Close()
 
 		_, err = file.Write(m.attachment)
 		if err != nil {
-			return errors.NewProjectError(serviceName, errors.OSError, err.Error())
+			return basePath, errors.NewProjectError(serviceName, errors.OSError, err.Error())
 		}
 
 		progressBar.Add(1)
 	}
-	return nil
+	return basePath, nil
 }
 
 func folderPath() string {

@@ -19,9 +19,13 @@ func main() {
 	}
 
 	srv := scraping.NewScrapSource(source)
-	if err := srv.Invoke(); err != nil {
+	resp, err := srv.Invoke()
+	if err != nil {
 		log.Fatalf("Error invoking scrap service: %s", err)
 	}
+
+	fmt.Printf("Total messages: %d\n", resp.TotalMessages)
+	fmt.Printf("Destination folder: %s\n", resp.DestinationFolder)
 
 	//cmd.Execute()
 }
