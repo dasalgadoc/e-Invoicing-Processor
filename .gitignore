@@ -4,6 +4,7 @@
 .idea
 .DS_Store
 env
+temp
 
 # Binaries for programs and plugins
 *.exe
