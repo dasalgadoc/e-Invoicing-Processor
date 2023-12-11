@@ -15,12 +15,6 @@ const (
 	folderFormat = "2006-01-02_15_04_05"
 )
 
-type ServiceResponse struct {
-	TotalMessages     int
-	DestinationFolder string
-	Messages          []Message
-}
-
 type ScrapService struct {
 	scrapSource ScrapSource
 }
