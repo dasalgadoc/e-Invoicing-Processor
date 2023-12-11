@@ -18,6 +18,22 @@ type Message struct {
 	attachment     []byte
 }
 
+func (m *Message) From() string {
+	return m.from
+}
+
+func (m *Message) Subject() string {
+	return m.subject
+}
+
+func (m *Message) Date() string {
+	return m.date
+}
+
+func (m *Message) AttachmentName() string {
+	return m.attachmentName
+}
+
 func NewMessage(id, to, from, subject, date string, attachmentName string, attachment []byte) *Message {
 	if !isMessageFromEInvoicing(subject) {
 		return nil
