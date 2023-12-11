@@ -9,24 +9,26 @@ const (
 )
 
 type Message struct {
-	id      string
-	to      string
-	from    string
-	subject string
-	date    string
+	id         string
+	to         string
+	from       string
+	subject    string
+	date       string
+	attachment []byte
 }
 
-func NewMessage(id, to, from, subject, date string) *Message {
+func NewMessage(id, to, from, subject, date string, attachment []byte) *Message {
 	if !isMessageFromEInvoicing(subject) {
 		return nil
 	}
 
 	return &Message{
-		id:      id,
-		to:      to,
-		from:    from,
-		subject: subject,
-		date:    date,
+		id:         id,
+		to:         to,
+		from:       from,
+		subject:    subject,
+		date:       date,
+		attachment: attachment,
 	}
 }
 
