@@ -56,12 +56,12 @@ func (s *ScrapSource) getMessagesAndAttachment(resp *gmail.ListMessagesResponse)
 
 		messagesParts := s.getMessageParts(messageContent)
 
-		attachment, attachmentErr := s.getAttachmentForMessage(message.Id, messageContent)
+		attachmentName, attachment, attachmentErr := s.getAttachmentForMessage(message.Id, messageContent)
 		if attachmentErr != nil {
 			return nil, errors.NewProjectError(sourceFile, errors.PartialError, err.Error())
 		}
 
-		msg := scraping.NewMessage(message.Id, messagesParts[to], messagesParts[from], messagesParts[subject], messagesParts[date], attachment)
+		msg := scraping.NewMessage(message.Id, messagesParts[to], messagesParts[from], messagesParts[subject], messagesParts[date], attachmentName, attachment)
 		if msg != nil {
 			messages = append(messages, *msg)
 		}
@@ -80,20 +80,23 @@ func (s *ScrapSource) getMessageParts(messageContent *gmail.Message) map[string]
 	return messagesParts
 }
 
-func (s *ScrapSource) getAttachmentForMessage(msgId string, msgContent *gmail.Message) ([]byte, *errors.ProjectError) {
+func (s *ScrapSource) getAttachmentForMessage(msgId string, msgContent *gmail.Message) (string, []byte, *errors.ProjectError) {
 	var attachment []byte
+	var attachmentName string
 	for _, part := range msgContent.Payload.Parts {
 		if part.Filename != "" {
+			attachmentName = part.Filename
+
 			data, err := s.service.Users.Messages.Attachments.Get(userId, msgId, part.Body.AttachmentId).Do()
 			if err != nil {
-				return nil, errors.NewProjectError(sourceFile, errors.PartialError, err.Error())
+				return "", nil, errors.NewProjectError(sourceFile, errors.PartialError, err.Error())
 			}
 
 			attachment, err = base64.URLEncoding.DecodeString(data.Data)
 			if err != nil {
-				return nil, errors.NewProjectError(sourceFile, errors.PartialError, err.Error())
+				return "", nil, errors.NewProjectError(sourceFile, errors.PartialError, err.Error())
 			}
 		}
 	}
-	return attachment, nil
+	return attachmentName, attachment, nil
 }
