@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/dasalgadoc/e-Invoicing-Processor/internal/extracting"
 	"github.com/dasalgadoc/e-Invoicing-Processor/internal/platform/gmail"
 	"github.com/dasalgadoc/e-Invoicing-Processor/internal/scraping"
 	"log"
@@ -26,6 +27,11 @@ func main() {
 
 	fmt.Printf("Total messages: %d\n", resp.TotalMessages)
 	fmt.Printf("Destination folder: %s\n", resp.DestinationFolder)
+
+	extSrv := extracting.NewExtractService()
+	err = extSrv.Invoke(*resp)
+
+	fmt.Printf("Error: %s\n", err)
 
 	//cmd.Execute()
 }
