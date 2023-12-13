@@ -25,14 +25,11 @@ func main() {
 		log.Fatalf("Error invoking scrap service: %s", err)
 	}
 
-	fmt.Printf("Total messages: %d\n", resp.TotalMessages)
-	fmt.Printf("Destination folder: %s\n", resp.DestinationFolder)
-
 	extSrv := extracting.NewExtractService()
-	res, err := extSrv.Invoke(*resp)
-
-	fmt.Printf("Error: %s\n", err)
-	fmt.Printf("Total extracted: %+v\n", res)
+	_, err = extSrv.Invoke(*resp)
+	if err != nil {
+		log.Fatalf("Error invoking extract service: %s", err)
+	}
 
 	//cmd.Execute()
 }

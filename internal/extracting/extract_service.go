@@ -29,6 +29,7 @@ func (e *ExtractService) Invoke(data scraping.ServiceResponse) (*ServiceResponse
 		Attachments:     make([]Attachment, 0),
 	}
 
+	fmt.Printf("Extracting files in: %s\n", destinationFolder)
 	progressBar := progressbar.Default(int64(data.TotalMessages), "Extracting attachments")
 	for _, m := range data.Messages {
 		files, err := unzipFileToDestination(data.DestinationFolder, m.AttachmentName(), destinationFolder)
