@@ -29,9 +29,10 @@ func main() {
 	fmt.Printf("Destination folder: %s\n", resp.DestinationFolder)
 
 	extSrv := extracting.NewExtractService()
-	err = extSrv.Invoke(*resp)
+	res, err := extSrv.Invoke(*resp)
 
 	fmt.Printf("Error: %s\n", err)
+	fmt.Printf("Total extracted: %+v\n", res)
 
 	//cmd.Execute()
 }

@@ -19,19 +19,33 @@ func NewExtractService() *ExtractService {
 	return &ExtractService{}
 }
 
-func (e *ExtractService) Invoke(data scraping.ServiceResponse) *errors.ProjectError {
+func (e *ExtractService) Invoke(data scraping.ServiceResponse) (*ServiceResponse, *errors.ProjectError) {
 	originFolder := data.DestinationFolder
 	destinationFolder := fmt.Sprintf("%s%s", originFolder, destinationSuffix)
 
+	resp := &ServiceResponse{
+		OriginalFolder:  originFolder,
+		ExtractedFolder: destinationFolder,
+		Attachments:     make([]Attachment, 0),
+	}
+
 	progressBar := progressbar.Default(int64(data.TotalMessages), "Extracting attachments")
 	for _, m := range data.Messages {
-		err := unzipFileToDestination(data.DestinationFolder, m.AttachmentName(), destinationFolder)
+		files, err := unzipFileToDestination(data.DestinationFolder, m.AttachmentName(), destinationFolder)
 		if err != nil {
-			return errors.NewProjectError(serviceName, errors.ServiceError, err.Error())
+			return resp, errors.NewProjectError(serviceName, errors.ServiceError, err.Error())
 		}
+		resp.Attachments = append(resp.Attachments, Attachment{
+			Receiver:       m.To(),
+			Sender:         m.From(),
+			Subject:        m.Subject(),
+			Date:           m.Date(),
+			Name:           m.AttachmentName(),
+			ExtractedFiles: files,
+		})
 
 		progressBar.Add(1)
 	}
 
-	return nil
+	return resp, nil
 }

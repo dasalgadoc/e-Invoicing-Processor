@@ -18,6 +18,10 @@ type Message struct {
 	attachment     []byte
 }
 
+func (m *Message) To() string {
+	return m.to
+}
+
 func (m *Message) From() string {
 	return m.from
 }
