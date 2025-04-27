@@ -2,6 +2,7 @@ package gmail
 
 import (
 	"encoding/base64"
+	"fmt"
 	"github.com/dasalgadoc/e-Invoicing-Processor/internal/scraping"
 	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/criteria"
 	"github.com/dasalgadoc/e-Invoicing-Processor/kit/domain/errors"
@@ -14,6 +15,8 @@ const (
 
 	userId                 = "me"
 	attachmentCompressFile = "has:attachment filename:zip"
+	startDateQuery         = "after: 2023/01/01"
+	endDateQuery           = "before: 2023/12/31"
 
 	to      = "Delivered-To"
 	from    = "From"
@@ -36,7 +39,8 @@ func NewGmailScrapSource() (*ScrapSource, *errors.ProjectError) {
 }
 
 func (s *ScrapSource) GetInvoicingMessages(criteria criteria.Criteria) ([]scraping.Message, *errors.ProjectError) {
-	resp, err := s.service.Users.Messages.List(userId).Q(attachmentCompressFile).Do()
+	query := fmt.Sprintf("%s %s %s", attachmentCompressFile, startDateQuery, endDateQuery)
+	resp, err := s.service.Users.Messages.List(userId).Q(query).Do()
 	if err != nil {
 		return nil, errors.NewProjectError(sourceFile, errors.ServiceError, err.Error())
 	}
